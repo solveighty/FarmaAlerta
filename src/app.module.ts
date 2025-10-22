@@ -10,6 +10,7 @@ import { AuthModule } from './modules/auth/auth.module';
 import { UsersModule } from './modules/users/users.module';
 import { PharmaciesModule } from './modules/pharmacies/pharmacies.module';
 import { MedicinesModule } from './modules/medicines/medicines.module';
+import { DisponibilidadModule } from './modules/disponibilidad/disponibilidad.module';
 import { SearchModule } from './modules/search/search.module';
 import { AlertsModule } from './modules/alerts/alerts.module';
 import { AuditModule } from './modules/audit/audit.module';
@@ -28,6 +29,7 @@ import { AuditModule } from './modules/audit/audit.module';
     UsersModule,
     PharmaciesModule,
     MedicinesModule,
+    DisponibilidadModule,
     SearchModule,
     AlertsModule,
     AuditModule,
