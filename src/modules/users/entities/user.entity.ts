@@ -9,9 +9,9 @@ import {
 import { ApiProperty } from '@nestjs/swagger';
 
 export enum UserRole {
-  PATIENT = 'patient',
-  PHARMACY_ADMIN = 'pharmacy_admin',
-  SYSTEM_ADMIN = 'system_admin',
+  USER = 'user',
+  PHARMACY = 'pharmacy',
+  ADMIN = 'admin',
 }
 
 @Entity('users')
@@ -21,47 +21,39 @@ export class User {
   @ApiProperty({ description: 'User unique identifier' })
   id: string;
 
-  @Column({ type: 'varchar', length: 255 })
+  @Column({ type: 'varchar', length: 100 })
   @ApiProperty({ description: 'User full name' })
   name: string;
 
-  @Column({ type: 'varchar', length: 255, unique: true })
+  @Column({ type: 'varchar', length: 150, unique: true })
   @ApiProperty({ description: 'User email address' })
   email: string;
 
-  @Column({ type: 'varchar', length: 255 })
+  @Column({ type: 'text', name: 'password_hash' })
   @ApiProperty({ description: 'User password (hashed)', writeOnly: true })
-  password: string;
+  passwordHash: string;
 
   @Column({
-    type: 'enum',
-    enum: UserRole,
-    default: UserRole.PATIENT,
+    type: 'varchar',
+    length: 20,
+    default: UserRole.USER,
   })
   @ApiProperty({
     description: 'User role',
     enum: UserRole,
-    default: UserRole.PATIENT,
+    default: UserRole.USER,
   })
   role: UserRole;
 
-  @Column({ type: 'varchar', length: 20, nullable: true })
-  @ApiProperty({ description: 'User phone number', required: false })
-  phone?: string;
-
-  @Column({ type: 'text', nullable: true })
-  @ApiProperty({ description: 'User address', required: false })
-  address?: string;
-
-  @Column({ type: 'boolean', default: true })
+  @Column({ type: 'boolean', default: true, name: 'is_active' })
   @ApiProperty({ description: 'Whether user is active' })
   isActive: boolean;
 
-  @CreateDateColumn()
+  @CreateDateColumn({ name: 'created_at' })
   @ApiProperty({ description: 'User creation date' })
   createdAt: Date;
 
-  @UpdateDateColumn()
+  @UpdateDateColumn({ name: 'updated_at' })
   @ApiProperty({ description: 'User last update date' })
   updatedAt: Date;
 }

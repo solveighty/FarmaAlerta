@@ -14,11 +14,11 @@ export class MedicinesService {
 
   async create(createMedicineDto: CreateMedicineDto): Promise<Medicine> {
     const existingMedicine = await this.medicineRepository.findOne({
-      where: { barcode: createMedicineDto.barcode },
+      where: { name: createMedicineDto.name },
     });
 
     if (existingMedicine) {
-      throw new BadRequestException('Medicine with this barcode already exists');
+      throw new BadRequestException('Medicine with this name already exists');
     }
 
     const medicine = this.medicineRepository.create(createMedicineDto);
@@ -52,18 +52,11 @@ export class MedicinesService {
     return medicine;
   }
 
-  async findByBarcode(barcode: string): Promise<Medicine | null> {
-    return this.medicineRepository.findOne({
-      where: { barcode },
-    });
-  }
-
   async search(query: string, page: number = 1, limit: number = 10) {
     const [medicines, total] = await this.medicineRepository.findAndCount({
       where: [
         { name: Like(`%${query}%`) },
-        { barcode: Like(`%${query}%`) },
-        { activeIngredient: Like(`%${query}%`) },
+        { genericName: Like(`%${query}%`) },
       ],
       skip: (page - 1) * limit,
       take: limit,

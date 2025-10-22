@@ -26,8 +26,8 @@ export class UsersService {
 
     const user = this.userRepository.create({
       ...createUserDto,
-      password: hashedPassword,
-      role: createUserDto.role || UserRole.PATIENT,
+      passwordHash: hashedPassword,
+      role: (createUserDto.role as UserRole) || UserRole.USER,
     });
 
     return this.userRepository.save(user);
@@ -42,10 +42,9 @@ export class UsersService {
         'name',
         'email',
         'role',
-        'phone',
-        'address',
         'isActive',
         'createdAt',
+        'updatedAt',
       ],
     });
 

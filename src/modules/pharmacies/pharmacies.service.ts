@@ -14,12 +14,12 @@ export class PharmaciesService {
 
   async create(createPharmacyDto: CreatePharmacyDto): Promise<Pharmacy> {
     const existingPharmacy = await this.pharmacyRepository.findOne({
-      where: { email: createPharmacyDto.email },
+      where: { name: createPharmacyDto.name },
     });
 
     if (existingPharmacy) {
       throw new BadRequestException(
-        'Pharmacy with this email already exists',
+        'Pharmacy with this name already exists',
       );
     }
 
@@ -52,12 +52,6 @@ export class PharmaciesService {
     }
 
     return pharmacy;
-  }
-
-  async findByEmail(email: string): Promise<Pharmacy | null> {
-    return this.pharmacyRepository.findOne({
-      where: { email },
-    });
   }
 
   async search(query: string, page: number = 1, limit: number = 10) {
