@@ -18,45 +18,57 @@ import { UpdateUserDto } from './dto/update-user.dto';
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
-  @Post()
-  @ApiOperation({ summary: 'Create a new user' })
-  @ApiResponse({ status: 201, description: 'User successfully created' })
-  async create(@Body() createUserDto: CreateUserDto) {
-    return this.usersService.create(createUserDto);
-  }
-
   @Get()
-  @ApiOperation({ summary: 'Get all users' })
-  @ApiResponse({ status: 200, description: 'Returns all users' })
+  @ApiOperation({ summary: 'Obtener lista de todos los usuarios' })
+  @ApiResponse({ status: 200, description: 'Lista de usuarios' })
   async findAll(
     @Query('page') page: number = 1,
     @Query('limit') limit: number = 10,
   ) {
-    return this.usersService.findAll(page, limit);
+    return {
+      message: 'GET /users - Obtener lista de todos los usuarios',
+      description: 'Solo el administrador puede listar usuarios',
+    };
   }
 
   @Get(':id')
-  @ApiOperation({ summary: 'Get user by ID' })
-  @ApiResponse({ status: 200, description: 'Returns a specific user' })
+  @ApiOperation({ summary: 'Consultar usuario por ID' })
+  @ApiResponse({ status: 200, description: 'Datos del usuario' })
   async findOne(@Param('id') id: string) {
-    return this.usersService.findOne(id);
+    return {
+      message: `GET /users/:id - Consultar usuario por ID (${id})`,
+    };
+  }
+
+  @Post()
+  @ApiOperation({ summary: 'Crear usuario (por admin)' })
+  @ApiResponse({ status: 201, description: 'Usuario creado exitosamente' })
+  async create(@Body() createUserDto: CreateUserDto) {
+    return {
+      message: 'POST /users - Crear usuario (por admin)',
+      description: 'Solo el administrador puede crear usuarios',
+    };
   }
 
   @Patch(':id')
-  @ApiOperation({ summary: 'Update user' })
-  @ApiResponse({ status: 200, description: 'User successfully updated' })
+  @ApiOperation({ summary: 'Actualizar información de usuario' })
+  @ApiResponse({ status: 200, description: 'Usuario actualizado' })
   async update(
     @Param('id') id: string,
     @Body() updateUserDto: UpdateUserDto,
   ) {
-    return this.usersService.update(id, updateUserDto);
+    return {
+      message: `PATCH /users/:id - Actualizar información de usuario (${id})`,
+    };
   }
 
   @Delete(':id')
-  @ApiOperation({ summary: 'Delete user' })
-  @ApiResponse({ status: 200, description: 'User successfully deleted' })
+  @ApiOperation({ summary: 'Eliminar usuario' })
+  @ApiResponse({ status: 200, description: 'Usuario eliminado exitosamente' })
   async remove(@Param('id') id: string) {
-    await this.usersService.remove(id);
-    return { message: 'User successfully deleted' };
+    return {
+      message: `DELETE /users/:id - Eliminar usuario (${id})`,
+      description: 'Solo el administrador puede eliminar usuarios',
+    };
   }
 }

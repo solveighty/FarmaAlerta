@@ -18,56 +18,68 @@ import { UpdateMedicineDto } from './dto/update-medicine.dto';
 export class MedicinesController {
   constructor(private readonly medicinesService: MedicinesService) {}
 
-  @Post()
-  @ApiOperation({ summary: 'Create a new medicine' })
-  @ApiResponse({ status: 201, description: 'Medicine successfully created' })
-  async create(@Body() createMedicineDto: CreateMedicineDto) {
-    return this.medicinesService.create(createMedicineDto);
-  }
-
   @Get()
-  @ApiOperation({ summary: 'Get all medicines' })
-  @ApiResponse({ status: 200, description: 'Returns all medicines' })
+  @ApiOperation({ summary: 'Listar todos los medicamentos disponibles' })
+  @ApiResponse({ status: 200, description: 'Lista de medicamentos' })
   async findAll(
     @Query('page') page: number = 1,
     @Query('limit') limit: number = 10,
   ) {
-    return this.medicinesService.findAll(page, limit);
+    return {
+      message: 'GET /medicines - Listar todos los medicamentos disponibles',
+      description: 'Catálogo base de medicamentos (no inventario de farmacias)',
+    };
   }
 
   @Get('search')
-  @ApiOperation({ summary: 'Search medicines' })
-  @ApiResponse({ status: 200, description: 'Search results' })
+  @ApiOperation({ summary: 'Buscar medicamentos por nombre o principio activo' })
+  @ApiResponse({ status: 200, description: 'Resultados de búsqueda' })
   async search(
     @Query('q') query: string,
     @Query('page') page: number = 1,
     @Query('limit') limit: number = 10,
   ) {
-    return this.medicinesService.search(query, page, limit);
+    return {
+      message: `GET /medicines/search?q=${query} - Buscar medicamentos por nombre o principio activo`,
+    };
   }
 
   @Get(':id')
-  @ApiOperation({ summary: 'Get medicine by ID' })
-  @ApiResponse({ status: 200, description: 'Returns a specific medicine' })
+  @ApiOperation({ summary: 'Obtener medicamento por ID' })
+  @ApiResponse({ status: 200, description: 'Datos del medicamento' })
   async findOne(@Param('id') id: string) {
-    return this.medicinesService.findOne(id);
+    return {
+      message: `GET /medicines/:id - Obtener medicamento por ID (${id})`,
+    };
+  }
+
+  @Post()
+  @ApiOperation({ summary: 'Crear nuevo medicamento (solo admin)' })
+  @ApiResponse({ status: 201, description: 'Medicamento creado exitosamente' })
+  async create(@Body() createMedicineDto: CreateMedicineDto) {
+    return {
+      message: 'POST /medicines - Crear nuevo medicamento (solo admin)',
+    };
   }
 
   @Patch(':id')
-  @ApiOperation({ summary: 'Update medicine' })
-  @ApiResponse({ status: 200, description: 'Medicine successfully updated' })
+  @ApiOperation({ summary: 'Actualizar datos del medicamento' })
+  @ApiResponse({ status: 200, description: 'Medicamento actualizado' })
   async update(
     @Param('id') id: string,
     @Body() updateMedicineDto: UpdateMedicineDto,
   ) {
-    return this.medicinesService.update(id, updateMedicineDto);
+    return {
+      message: `PATCH /medicines/:id - Actualizar datos del medicamento (${id})`,
+    };
   }
 
   @Delete(':id')
-  @ApiOperation({ summary: 'Delete medicine' })
-  @ApiResponse({ status: 200, description: 'Medicine successfully deleted' })
+  @ApiOperation({ summary: 'Eliminar medicamento (solo admin)' })
+  @ApiResponse({ status: 200, description: 'Medicamento eliminado exitosamente' })
   async remove(@Param('id') id: string) {
-    await this.medicinesService.remove(id);
-    return { message: 'Medicine successfully deleted' };
+    return {
+      message: `DELETE /medicines/:id - Eliminar medicamento (${id}) (solo admin)`,
+    };
   }
 }

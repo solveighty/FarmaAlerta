@@ -1,49 +1,76 @@
-import { Controller, Post, Body, HttpCode, HttpStatus } from '@nestjs/common';
+import { Controller, Post, Body, Get, HttpCode, HttpStatus } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { AuthService } from './auth.service';
 
-@ApiTags('Authentication')
+@ApiTags('Auth')
 @Controller('auth')
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
-  @Post('login')
-  @HttpCode(HttpStatus.OK)
-  @ApiOperation({ summary: 'User login' })
-  @ApiResponse({
-    status: 200,
-    description: 'Returns JWT token',
-    schema: {
-      example: {
-        access_token:
-          'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InVzZXJAZXhhbXBsZS5jb20iLCJzdWIiOiIxMjM0NTY3ODkwIiwicm9sZSI6InBhdGllbnQifQ',
-        user: {
-          id: '123',
-          email: 'user@example.com',
-          role: 'patient',
-        },
-      },
-    },
-  })
-  async login(@Body() body: any) {
-    return this.authService.login(body);
-  }
-
   @Post('register')
   @HttpCode(HttpStatus.CREATED)
-  @ApiOperation({ summary: 'User registration' })
+  @ApiOperation({ summary: 'Registrar nuevo usuario o farmacia' })
   @ApiResponse({
     status: 201,
-    description: 'User successfully registered',
+    description: 'Usuario o farmacia registrado exitosamente',
   })
   async register(@Body() body: any) {
-    return this.authService.register(body);
+    return {
+      message: 'POST /auth/register - Registrar nuevo usuario o farmacia (según tipo)',
+      data: this.authService.register(body),
+    };
+  }
+
+  @Post('login')
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: 'Iniciar sesión y obtener JWT' })
+  @ApiResponse({
+    status: 200,
+    description: 'JWT token obtenido exitosamente',
+  })
+  async login(@Body() body: any) {
+    return {
+      message: 'POST /auth/login - Iniciar sesión y obtener JWT',
+      data: this.authService.login(body),
+    };
   }
 
   @Post('refresh')
   @HttpCode(HttpStatus.OK)
-  @ApiOperation({ summary: 'Refresh JWT token' })
+  @ApiOperation({ summary: 'Renovar el token JWT' })
+  @ApiResponse({
+    status: 200,
+    description: 'Token renovado exitosamente',
+  })
   async refreshToken(@Body() body: any) {
-    return this.authService.generateToken(body);
+    return {
+      message: 'POST /auth/refresh - Renovar el token JWT',
+      data: this.authService.generateToken(body),
+    };
+  }
+
+  @Get('profile')
+  @ApiOperation({ summary: 'Obtener datos del usuario autenticado' })
+  @ApiResponse({
+    status: 200,
+    description: 'Datos del usuario obtenidos',
+  })
+  async getProfile() {
+    return {
+      message: 'GET /auth/profile - Obtener datos del usuario autenticado',
+    };
+  }
+
+  @Post('logout')
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: 'Cerrar sesión' })
+  @ApiResponse({
+    status: 200,
+    description: 'Sesión cerrada exitosamente',
+  })
+  async logout() {
+    return {
+      message: 'POST /auth/logout - Cerrar sesión (invalida token)',
+    };
   }
 }

@@ -18,56 +18,69 @@ import { UpdatePharmacyDto } from './dto/update-pharmacy.dto';
 export class PharmaciesController {
   constructor(private readonly pharmaciesService: PharmaciesService) {}
 
-  @Post()
-  @ApiOperation({ summary: 'Create a new pharmacy' })
-  @ApiResponse({ status: 201, description: 'Pharmacy successfully created' })
-  async create(@Body() createPharmacyDto: CreatePharmacyDto) {
-    return this.pharmaciesService.create(createPharmacyDto);
-  }
-
   @Get()
-  @ApiOperation({ summary: 'Get all pharmacies' })
-  @ApiResponse({ status: 200, description: 'Returns all pharmacies' })
+  @ApiOperation({ summary: 'Listar farmacias registradas' })
+  @ApiResponse({ status: 200, description: 'Lista de farmacias' })
   async findAll(
     @Query('page') page: number = 1,
     @Query('limit') limit: number = 10,
   ) {
-    return this.pharmaciesService.findAll(page, limit);
+    return {
+      message: 'GET /pharmacies - Listar farmacias registradas',
+      description: 'Devuelve todas las farmacias con información pública',
+    };
   }
 
   @Get('search')
-  @ApiOperation({ summary: 'Search pharmacies' })
-  @ApiResponse({ status: 200, description: 'Search results' })
+  @ApiOperation({ summary: 'Buscar farmacias por nombre o ciudad' })
+  @ApiResponse({ status: 200, description: 'Resultados de búsqueda' })
   async search(
     @Query('q') query: string,
     @Query('page') page: number = 1,
     @Query('limit') limit: number = 10,
   ) {
-    return this.pharmaciesService.search(query, page, limit);
+    return {
+      message: `GET /pharmacies/search?q=${query} - Buscar farmacias por nombre o ciudad`,
+    };
   }
 
   @Get(':id')
-  @ApiOperation({ summary: 'Get pharmacy by ID' })
-  @ApiResponse({ status: 200, description: 'Returns a specific pharmacy' })
+  @ApiOperation({ summary: 'Obtener detalles de una farmacia' })
+  @ApiResponse({ status: 200, description: 'Datos de la farmacia' })
   async findOne(@Param('id') id: string) {
-    return this.pharmaciesService.findOne(id);
+    return {
+      message: `GET /pharmacies/:id - Obtener detalles de una farmacia (${id})`,
+    };
+  }
+
+  @Post()
+  @ApiOperation({ summary: 'Registrar una farmacia' })
+  @ApiResponse({ status: 201, description: 'Farmacia registrada exitosamente' })
+  async create(@Body() createPharmacyDto: CreatePharmacyDto) {
+    return {
+      message: 'POST /pharmacies - Registrar una farmacia (por admin o farmacia misma)',
+      description: 'Puede contener fields: name, address, lat, lng, opening_hours, etc.',
+    };
   }
 
   @Patch(':id')
-  @ApiOperation({ summary: 'Update pharmacy' })
-  @ApiResponse({ status: 200, description: 'Pharmacy successfully updated' })
+  @ApiOperation({ summary: 'Actualizar información de farmacia' })
+  @ApiResponse({ status: 200, description: 'Farmacia actualizada' })
   async update(
     @Param('id') id: string,
     @Body() updatePharmacyDto: UpdatePharmacyDto,
   ) {
-    return this.pharmaciesService.update(id, updatePharmacyDto);
+    return {
+      message: `PATCH /pharmacies/:id - Actualizar información (${id})`,
+    };
   }
 
   @Delete(':id')
-  @ApiOperation({ summary: 'Delete pharmacy' })
-  @ApiResponse({ status: 200, description: 'Pharmacy successfully deleted' })
+  @ApiOperation({ summary: 'Eliminar farmacia (solo admin)' })
+  @ApiResponse({ status: 200, description: 'Farmacia eliminada exitosamente' })
   async remove(@Param('id') id: string) {
-    await this.pharmaciesService.remove(id);
-    return { message: 'Pharmacy successfully deleted' };
+    return {
+      message: `DELETE /pharmacies/:id - Eliminar farmacia (${id}) (solo admin)`,
+    };
   }
 }
