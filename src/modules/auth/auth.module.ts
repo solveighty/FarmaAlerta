@@ -1,6 +1,7 @@
 import { Module } from '@nestjs/common';
 import { JwtModule } from '@nestjs/jwt';
 import { PassportModule } from '@nestjs/passport';
+import { ConfigModule } from '@nestjs/config';
 import { AuthController } from './auth.controller';
 import { AuthService } from './auth.service';
 import { RegisterUserUseCase } from './use-case/register-user.use-case';
@@ -8,6 +9,7 @@ import { RegisterAdminUseCase } from './use-case/register-admin.use-case';
 import { LoginUserUseCase } from './use-case/login-user.use-case';
 import { LoginAdminUseCase } from './use-case/login-admin.use-case';
 import { RegisterPharmacyUseCase } from './use-case/register-pharmacy.use-case';
+import { LoginPharmacyUseCase } from './use-case/login-pharmacy.use-case';
 import { JwtStrategy } from './strategies/jwt.strategy';
 import { UsersModule } from '../users/users.module';
 import { AuditModule } from '../audit/audit.module';
@@ -17,6 +19,7 @@ import { envs } from '../../config';
 
 @Module({
   imports: [
+    ConfigModule,
     PassportModule.register({ defaultStrategy: 'jwt' }),
     JwtModule.register({
       secret: envs.JWT_SECRET,
@@ -28,7 +31,7 @@ import { envs } from '../../config';
     RedisModule,
   ],
   controllers: [AuthController],
-  providers: [AuthService, RegisterUserUseCase, RegisterAdminUseCase, LoginUserUseCase, LoginAdminUseCase, RegisterPharmacyUseCase, JwtStrategy],
+  providers: [AuthService, RegisterUserUseCase, RegisterAdminUseCase, LoginUserUseCase, LoginAdminUseCase, RegisterPharmacyUseCase, LoginPharmacyUseCase, JwtStrategy],
   exports: [AuthService],
 })
 export class AuthModule {}

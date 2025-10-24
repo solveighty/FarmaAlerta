@@ -5,9 +5,11 @@ import { RegisterAdminUseCase } from './use-case/register-admin.use-case';
 import { LoginUserUseCase } from './use-case/login-user.use-case';
 import { LoginAdminUseCase } from './use-case/login-admin.use-case';
 import { RegisterPharmacyUseCase } from './use-case/register-pharmacy.use-case';
+import { LoginPharmacyUseCase } from './use-case/login-pharmacy.use-case';
 import { RegisterUserDto } from './dto/register-user.dto';
 import { RegisterAdminDto } from './dto/register-admin.dto';
 import { RegisterPharmacyDto } from './dto/register-pharmacy.dto';
+import { LoginPharmacyDto } from './dto/login-pharmacy.dto';
 
 @Injectable()
 export class AuthService {
@@ -18,6 +20,7 @@ export class AuthService {
     private readonly loginUserUseCase: LoginUserUseCase,
     private readonly loginAdminUseCase: LoginAdminUseCase,
     private readonly registerPharmacyUseCase: RegisterPharmacyUseCase,
+    private readonly loginPharmacyUseCase: LoginPharmacyUseCase,
   ) {}
 
   async validateUser(email: string, password: string): Promise<any> {
@@ -47,6 +50,10 @@ export class AuthService {
     adminUserId: string,
   ): Promise<any> {
     return this.registerPharmacyUseCase.execute(registerPharmacyDto, adminUserId);
+  }
+
+  async loginPharmacy(loginPharmacyDto: LoginPharmacyDto, ipAddress: string): Promise<any> {
+    return this.loginPharmacyUseCase.execute(loginPharmacyDto, ipAddress);
   }
 
   async generateToken(payload: any) {

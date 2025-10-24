@@ -6,6 +6,7 @@ import { RegisterAdminDto } from './dto/register-admin.dto';
 import { RegisterPharmacyDto } from './dto/register-pharmacy.dto';
 import { LoginUserDto } from './dto/login-user.dto';
 import { LoginAdminDto } from './dto/login-admin.dto';
+import { LoginPharmacyDto } from './dto/login-pharmacy.dto';
 import { JwtAuthGuard } from './guards/jwt-auth.guard';
 import { AdminOnlyGuard } from './guards/admin-only.guard';
 
@@ -108,42 +109,14 @@ export class AuthController {
     return this.authService.loginAdmin(loginDto.email, loginDto.password);
   }
 
-  @Post('refresh')
+  @Post('login/pharmacy')
   @HttpCode(HttpStatus.OK)
-  @ApiOperation({ summary: 'Renovar el token JWT' })
-  @ApiResponse({
-    status: 200,
-    description: 'Token renovado exitosamente',
-  })
-  async refreshToken(@Body() body: any) {
-    return {
-      message: 'POST /auth/refresh - Renovar el token JWT',
-      data: this.authService.generateToken(body),
-    };
-  }
-
-  @Get('profile')
-  @ApiOperation({ summary: 'Obtener datos del usuario autenticado' })
-  @ApiResponse({
-    status: 200,
-    description: 'Datos del usuario obtenidos',
-  })
-  async getProfile() {
-    return {
-      message: 'GET /auth/profile - Obtener datos del usuario autenticado',
-    };
-  }
-
-  @Post('logout')
-  @HttpCode(HttpStatus.OK)
-  @ApiOperation({ summary: 'Cerrar sesión' })
-  @ApiResponse({
-    status: 200,
-    description: 'Sesión cerrada exitosamente',
-  })
-  async logout() {
-    return {
-      message: 'POST /auth/logout - Cerrar sesión (invalida token)',
-    };
+  @ApiOperation({ summary: 'Pharmacy login endpoint (role = pharmacy)' })
+  @ApiResponse({ status: 200, description: 'Access and refresh tokens returned' })
+  @ApiResponse({ status: 401, description: 'Invalid credentials' })
+  @ApiResponse({ status: 403, description: 'Forbidden - pharmacy role required' })
+  async loginPharmacy(@Body() loginDto: LoginPharmacyDto, @Request() req: any) {
+    const ipAddress = req.ip || req.connection.remoteAddress || '0.0.0.0';
+    return this.authService.loginPharmacy(loginDto, ipAddress);
   }
 }
