@@ -24,7 +24,13 @@ export const envs: IEnvs = {
 
   // JWT Authentication
   JWT_SECRET: get('JWT_SECRET').required().asString(),
-  JWT_EXPIRATION: get('JWT_EXPIRATION').required().asString(),
+  JWT_EXPIRES_ADMIN: get('JWT_EXPIRES_ADMIN').required().asString(),
+  JWT_EXPIRES_PHARMACY: get('JWT_EXPIRES_PHARMACY').required().asString(),
+  JWT_EXPIRES_USER: get('JWT_EXPIRES_USER').required().asString(),
+  JWT_REFRESH_EXPIRES_ADMIN: get('JWT_REFRESH_EXPIRES_ADMIN').required().asString(),
+  JWT_REFRESH_EXPIRES_PHARMACY: get('JWT_REFRESH_EXPIRES_PHARMACY').required().asString(),
+  JWT_REFRESH_EXPIRES_USER: get('JWT_REFRESH_EXPIRES_USER').required().asString(),
+  MASTER_KEY: get('MASTER_KEY').required().asString(),
 
   // Swagger Documentation
   SWAGGER_ENABLED: get('SWAGGER_ENABLED').default('true').asBool(),

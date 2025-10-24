@@ -13,7 +13,13 @@ export interface IEnvs {
   REDIS_PASSWORD: string;
   REDIS_DB: number;
   JWT_SECRET: string;
-  JWT_EXPIRATION: string;
+  JWT_EXPIRES_ADMIN: string;
+  JWT_EXPIRES_PHARMACY: string;
+  JWT_EXPIRES_USER: string;
+  JWT_REFRESH_EXPIRES_ADMIN: string;
+  JWT_REFRESH_EXPIRES_PHARMACY: string;
+  JWT_REFRESH_EXPIRES_USER: string;
+  MASTER_KEY: string;
   SWAGGER_ENABLED: boolean;
   SWAGGER_PATH: string;
   LOG_LEVEL: string;

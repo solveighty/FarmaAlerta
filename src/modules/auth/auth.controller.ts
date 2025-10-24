@@ -1,24 +1,30 @@
 import { Controller, Post, Body, Get, HttpCode, HttpStatus } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { AuthService } from './auth.service';
+import { RegisterUserDto } from './dto/register-user.dto';
 
 @ApiTags('Auth')
 @Controller('auth')
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
-  @Post('register')
+  @Post('register/user')
   @HttpCode(HttpStatus.CREATED)
-  @ApiOperation({ summary: 'Registrar nuevo usuario o farmacia' })
+  @ApiOperation({ summary: 'Register a new user' })
   @ApiResponse({
     status: 201,
-    description: 'Usuario o farmacia registrado exitosamente',
+    description: 'User registered successfully. Please log in to access the application.',
   })
-  async register(@Body() body: any) {
-    return {
-      message: 'POST /auth/register - Registrar nuevo usuario o farmacia (según tipo)',
-      data: this.authService.register(body),
-    };
+  @ApiResponse({
+    status: 400,
+    description: 'Bad request - validation error or password mismatch',
+  })
+  @ApiResponse({
+    status: 409,
+    description: 'User with this email already exists',
+  })
+  async registerUser(@Body() registerUserDto: RegisterUserDto) {
+    return this.authService.register(registerUserDto);
   }
 
   @Post('login')
