@@ -2,6 +2,7 @@ import { Controller, Post, Body, Get, HttpCode, HttpStatus } from '@nestjs/commo
 import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { AuthService } from './auth.service';
 import { RegisterUserDto } from './dto/register-user.dto';
+import { RegisterAdminDto } from './dto/register-admin.dto';
 
 @ApiTags('Auth')
 @Controller('auth')
@@ -25,6 +26,29 @@ export class AuthController {
   })
   async registerUser(@Body() registerUserDto: RegisterUserDto) {
     return this.authService.register(registerUserDto);
+  }
+
+  @Post('register/admin')
+  @HttpCode(HttpStatus.CREATED)
+  @ApiOperation({ summary: 'Register a new admin with master key' })
+  @ApiResponse({
+    status: 201,
+    description: 'Admin account created successfully. Please log in to access the application.',
+  })
+  @ApiResponse({
+    status: 400,
+    description: 'Bad request - validation error or password mismatch',
+  })
+  @ApiResponse({
+    status: 401,
+    description: 'Unauthorized - invalid master key',
+  })
+  @ApiResponse({
+    status: 409,
+    description: 'User with this email already exists',
+  })
+  async registerAdmin(@Body() registerAdminDto: RegisterAdminDto) {
+    return this.authService.registerAdmin(registerAdminDto);
   }
 
   @Post('login')

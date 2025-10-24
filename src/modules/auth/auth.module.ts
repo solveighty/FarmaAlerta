@@ -4,6 +4,7 @@ import { PassportModule } from '@nestjs/passport';
 import { AuthController } from './auth.controller';
 import { AuthService } from './auth.service';
 import { RegisterUserUseCase } from './use-case/register-user.use-case';
+import { RegisterAdminUseCase } from './use-case/register-admin.use-case';
 import { UsersModule } from '../users/users.module';
 import { AuditModule } from '../audit/audit.module';
 import { envs } from '../../config';
@@ -19,7 +20,7 @@ import { envs } from '../../config';
     AuditModule,
   ],
   controllers: [AuthController],
-  providers: [AuthService, RegisterUserUseCase],
+  providers: [AuthService, RegisterUserUseCase, RegisterAdminUseCase],
   exports: [AuthService],
 })
 export class AuthModule {}
