@@ -4,8 +4,10 @@ import { RegisterUserUseCase } from './use-case/register-user.use-case';
 import { RegisterAdminUseCase } from './use-case/register-admin.use-case';
 import { LoginUserUseCase } from './use-case/login-user.use-case';
 import { LoginAdminUseCase } from './use-case/login-admin.use-case';
+import { RegisterPharmacyUseCase } from './use-case/register-pharmacy.use-case';
 import { RegisterUserDto } from './dto/register-user.dto';
 import { RegisterAdminDto } from './dto/register-admin.dto';
+import { RegisterPharmacyDto } from './dto/register-pharmacy.dto';
 
 @Injectable()
 export class AuthService {
@@ -15,6 +17,7 @@ export class AuthService {
     private readonly registerAdminUseCase: RegisterAdminUseCase,
     private readonly loginUserUseCase: LoginUserUseCase,
     private readonly loginAdminUseCase: LoginAdminUseCase,
+    private readonly registerPharmacyUseCase: RegisterPharmacyUseCase,
   ) {}
 
   async validateUser(email: string, password: string): Promise<any> {
@@ -37,6 +40,13 @@ export class AuthService {
 
   async loginAdmin(email: string, password: string): Promise<any> {
     return this.loginAdminUseCase.execute(email, password);
+  }
+
+  async registerPharmacy(
+    registerPharmacyDto: RegisterPharmacyDto,
+    adminUserId: string,
+  ): Promise<any> {
+    return this.registerPharmacyUseCase.execute(registerPharmacyDto, adminUserId);
   }
 
   async generateToken(payload: any) {

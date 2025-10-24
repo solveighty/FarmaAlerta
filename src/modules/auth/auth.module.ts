@@ -7,8 +7,11 @@ import { RegisterUserUseCase } from './use-case/register-user.use-case';
 import { RegisterAdminUseCase } from './use-case/register-admin.use-case';
 import { LoginUserUseCase } from './use-case/login-user.use-case';
 import { LoginAdminUseCase } from './use-case/login-admin.use-case';
+import { RegisterPharmacyUseCase } from './use-case/register-pharmacy.use-case';
+import { JwtStrategy } from './strategies/jwt.strategy';
 import { UsersModule } from '../users/users.module';
 import { AuditModule } from '../audit/audit.module';
+import { PharmaciesModule } from '../pharmacies/pharmacies.module';
 import { RedisModule } from '../../redis/redis.module';
 import { envs } from '../../config';
 
@@ -21,10 +24,11 @@ import { envs } from '../../config';
     }),
     UsersModule,
     AuditModule,
+    PharmaciesModule,
     RedisModule,
   ],
   controllers: [AuthController],
-  providers: [AuthService, RegisterUserUseCase, RegisterAdminUseCase, LoginUserUseCase, LoginAdminUseCase],
+  providers: [AuthService, RegisterUserUseCase, RegisterAdminUseCase, LoginUserUseCase, LoginAdminUseCase, RegisterPharmacyUseCase, JwtStrategy],
   exports: [AuthService],
 })
 export class AuthModule {}

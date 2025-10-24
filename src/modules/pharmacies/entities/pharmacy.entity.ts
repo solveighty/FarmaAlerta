@@ -22,6 +22,9 @@ export class Pharmacy {
   @ApiProperty({ description: 'User managing the pharmacy' })
   user: User;
 
+  @Column({ type: 'uuid', name: 'user_id', nullable: true })
+  userId?: string;
+
   @Column({ type: 'varchar', length: 120 })
   @ApiProperty({ description: 'Pharmacy name' })
   name: string;
@@ -45,6 +48,14 @@ export class Pharmacy {
   @Column({ type: 'varchar', length: 20, nullable: true })
   @ApiProperty({ description: 'Pharmacy phone number', required: false })
   phone?: string;
+
+  @Column({ type: 'jsonb', nullable: true, name: 'opening_hours' })
+  @ApiProperty({
+    description: 'Pharmacy opening hours',
+    example: { open: '10:00', close: '22:00' },
+    required: false,
+  })
+  openingHours?: Record<string, any>;
 
   @CreateDateColumn({ name: 'created_at' })
   @ApiProperty({ description: 'Pharmacy creation date' })

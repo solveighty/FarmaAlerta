@@ -1,14 +1,20 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsString, IsEmail, IsOptional, IsNumber } from 'class-validator';
+import { IsString, IsEmail, IsOptional, IsNumber, IsUUID } from 'class-validator';
 
 export class CreatePharmacyDto {
+  @ApiProperty({ description: 'User ID (pharmacy owner)', required: false })
+  @IsUUID()
+  @IsOptional()
+  userId?: string;
+
   @ApiProperty({ description: 'Pharmacy name' })
   @IsString()
   name: string;
 
-  @ApiProperty({ description: 'Pharmacy email' })
+  @ApiProperty({ description: 'Pharmacy email', required: false })
   @IsEmail()
-  email: string;
+  @IsOptional()
+  email?: string;
 
   @ApiProperty({ description: 'Pharmacy phone number', required: false })
   @IsString()
@@ -18,11 +24,6 @@ export class CreatePharmacyDto {
   @ApiProperty({ description: 'Pharmacy address' })
   @IsString()
   address: string;
-
-  @ApiProperty({ description: 'Pharmacy postal code', required: false })
-  @IsString()
-  @IsOptional()
-  postalCode?: string;
 
   @ApiProperty({ description: 'Pharmacy city', required: false })
   @IsString()
@@ -39,13 +40,18 @@ export class CreatePharmacyDto {
   @IsOptional()
   longitude?: number;
 
+  @ApiProperty({ description: 'Pharmacy postal code', required: false })
+  @IsString()
+  @IsOptional()
+  postalCode?: string;
+
   @ApiProperty({ description: 'Pharmacy registration number', required: false })
   @IsString()
   @IsOptional()
   registrationNumber?: string;
 
-  @ApiProperty({ description: 'Pharmacy opening hours', required: false })
-  @IsString()
+  @ApiProperty({ description: 'Pharmacy opening hours (JSONB)', required: false })
   @IsOptional()
-  openingHours?: string;
+  openingHours?: Record<string, any>;
 }
+

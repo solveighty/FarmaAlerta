@@ -23,8 +23,7 @@ export class UpdatePharmacyDto extends PartialType(CreatePharmacyDto) {
   @IsOptional()
   city?: string;
 
-  @ApiProperty({ description: 'Pharmacy opening hours', required: false })
-  @IsString()
+  @ApiProperty({ description: 'Pharmacy opening hours (JSONB)', required: false })
   @IsOptional()
-  openingHours?: string;
+  openingHours?: Record<string, any>;
 }
