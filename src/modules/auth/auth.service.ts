@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { RegisterUserUseCase } from './use-case/register-user.use-case';
 import { RegisterAdminUseCase } from './use-case/register-admin.use-case';
+import { LoginUserUseCase } from './use-case/login-user.use-case';
 import { RegisterUserDto } from './dto/register-user.dto';
 import { RegisterAdminDto } from './dto/register-admin.dto';
 
@@ -11,6 +12,7 @@ export class AuthService {
     private readonly jwtService: JwtService,
     private readonly registerUserUseCase: RegisterUserUseCase,
     private readonly registerAdminUseCase: RegisterAdminUseCase,
+    private readonly loginUserUseCase: LoginUserUseCase,
   ) {}
 
   async validateUser(email: string, password: string): Promise<any> {
@@ -19,24 +21,16 @@ export class AuthService {
     return null;
   }
 
-  async login(user: any) {
-    const payload = { email: user.email, sub: user.id, role: user.role };
-    return {
-      access_token: this.jwtService.sign(payload),
-      user: {
-        id: user.id,
-        email: user.email,
-        role: user.role,
-      },
-    };
-  }
-
   async register(registerUserDto: RegisterUserDto): Promise<any> {
     return this.registerUserUseCase.execute(registerUserDto);
   }
 
   async registerAdmin(registerAdminDto: RegisterAdminDto): Promise<any> {
     return this.registerAdminUseCase.execute(registerAdminDto);
+  }
+
+  async loginUser(email: string, password: string): Promise<any> {
+    return this.loginUserUseCase.execute(email, password);
   }
 
   async generateToken(payload: any) {

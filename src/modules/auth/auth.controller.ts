@@ -3,6 +3,7 @@ import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { AuthService } from './auth.service';
 import { RegisterUserDto } from './dto/register-user.dto';
 import { RegisterAdminDto } from './dto/register-admin.dto';
+import { LoginUserDto } from './dto/login-user.dto';
 
 @ApiTags('Auth')
 @Controller('auth')
@@ -51,18 +52,14 @@ export class AuthController {
     return this.authService.registerAdmin(registerAdminDto);
   }
 
-  @Post('login')
+  @Post('login/user')
   @HttpCode(HttpStatus.OK)
-  @ApiOperation({ summary: 'Iniciar sesión y obtener JWT' })
-  @ApiResponse({
-    status: 200,
-    description: 'JWT token obtenido exitosamente',
-  })
-  async login(@Body() body: any) {
-    return {
-      message: 'POST /auth/login - Iniciar sesión y obtener JWT',
-      data: this.authService.login(body),
-    };
+  @ApiOperation({ summary: 'User login endpoint (role = user)' })
+  @ApiResponse({ status: 200, description: 'Access and refresh tokens returned' })
+  @ApiResponse({ status: 401, description: 'Invalid credentials' })
+  @ApiResponse({ status: 403, description: 'Forbidden - wrong role' })
+  async loginUser(@Body() loginDto: LoginUserDto) {
+    return this.authService.loginUser(loginDto.email, loginDto.password);
   }
 
   @Post('refresh')

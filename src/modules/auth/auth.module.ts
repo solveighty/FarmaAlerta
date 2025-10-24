@@ -5,8 +5,10 @@ import { AuthController } from './auth.controller';
 import { AuthService } from './auth.service';
 import { RegisterUserUseCase } from './use-case/register-user.use-case';
 import { RegisterAdminUseCase } from './use-case/register-admin.use-case';
+import { LoginUserUseCase } from './use-case/login-user.use-case';
 import { UsersModule } from '../users/users.module';
 import { AuditModule } from '../audit/audit.module';
+import { RedisModule } from '../../redis/redis.module';
 import { envs } from '../../config';
 
 @Module({
@@ -18,9 +20,10 @@ import { envs } from '../../config';
     }),
     UsersModule,
     AuditModule,
+    RedisModule,
   ],
   controllers: [AuthController],
-  providers: [AuthService, RegisterUserUseCase, RegisterAdminUseCase],
+  providers: [AuthService, RegisterUserUseCase, RegisterAdminUseCase, LoginUserUseCase],
   exports: [AuthService],
 })
 export class AuthModule {}
