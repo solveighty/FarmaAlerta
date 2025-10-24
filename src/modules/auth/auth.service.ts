@@ -3,6 +3,7 @@ import { JwtService } from '@nestjs/jwt';
 import { RegisterUserUseCase } from './use-case/register-user.use-case';
 import { RegisterAdminUseCase } from './use-case/register-admin.use-case';
 import { LoginUserUseCase } from './use-case/login-user.use-case';
+import { LoginAdminUseCase } from './use-case/login-admin.use-case';
 import { RegisterUserDto } from './dto/register-user.dto';
 import { RegisterAdminDto } from './dto/register-admin.dto';
 
@@ -13,6 +14,7 @@ export class AuthService {
     private readonly registerUserUseCase: RegisterUserUseCase,
     private readonly registerAdminUseCase: RegisterAdminUseCase,
     private readonly loginUserUseCase: LoginUserUseCase,
+    private readonly loginAdminUseCase: LoginAdminUseCase,
   ) {}
 
   async validateUser(email: string, password: string): Promise<any> {
@@ -31,6 +33,10 @@ export class AuthService {
 
   async loginUser(email: string, password: string): Promise<any> {
     return this.loginUserUseCase.execute(email, password);
+  }
+
+  async loginAdmin(email: string, password: string): Promise<any> {
+    return this.loginAdminUseCase.execute(email, password);
   }
 
   async generateToken(payload: any) {

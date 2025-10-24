@@ -6,6 +6,7 @@ import { AuthService } from './auth.service';
 import { RegisterUserUseCase } from './use-case/register-user.use-case';
 import { RegisterAdminUseCase } from './use-case/register-admin.use-case';
 import { LoginUserUseCase } from './use-case/login-user.use-case';
+import { LoginAdminUseCase } from './use-case/login-admin.use-case';
 import { UsersModule } from '../users/users.module';
 import { AuditModule } from '../audit/audit.module';
 import { RedisModule } from '../../redis/redis.module';
@@ -23,7 +24,7 @@ import { envs } from '../../config';
     RedisModule,
   ],
   controllers: [AuthController],
-  providers: [AuthService, RegisterUserUseCase, RegisterAdminUseCase, LoginUserUseCase],
+  providers: [AuthService, RegisterUserUseCase, RegisterAdminUseCase, LoginUserUseCase, LoginAdminUseCase],
   exports: [AuthService],
 })
 export class AuthModule {}

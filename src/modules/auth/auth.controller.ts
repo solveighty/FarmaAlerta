@@ -4,6 +4,7 @@ import { AuthService } from './auth.service';
 import { RegisterUserDto } from './dto/register-user.dto';
 import { RegisterAdminDto } from './dto/register-admin.dto';
 import { LoginUserDto } from './dto/login-user.dto';
+import { LoginAdminDto } from './dto/login-admin.dto';
 
 @ApiTags('Auth')
 @Controller('auth')
@@ -60,6 +61,16 @@ export class AuthController {
   @ApiResponse({ status: 403, description: 'Forbidden - wrong role' })
   async loginUser(@Body() loginDto: LoginUserDto) {
     return this.authService.loginUser(loginDto.email, loginDto.password);
+  }
+
+  @Post('login/admin')
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: 'Admin login endpoint (role = admin)' })
+  @ApiResponse({ status: 200, description: 'Access and refresh tokens returned' })
+  @ApiResponse({ status: 401, description: 'Invalid credentials' })
+  @ApiResponse({ status: 403, description: 'Forbidden - admin role required' })
+  async loginAdmin(@Body() loginDto: LoginAdminDto) {
+    return this.authService.loginAdmin(loginDto.email, loginDto.password);
   }
 
   @Post('refresh')
