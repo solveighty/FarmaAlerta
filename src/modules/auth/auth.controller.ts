@@ -5,6 +5,7 @@ import { RegisterAdminDto } from './dto/register-admin.dto';
 import { RegisterPharmacyDto } from './dto/register-pharmacy.dto';
 import { LoginAdminDto } from './dto/login-admin.dto';
 import { LoginPharmacyDto } from './dto/login-pharmacy.dto';
+import { RefreshAdminDto } from './dto/refresh-admin.dto';
 import { JwtAuthGuard } from './guards/jwt-auth.guard';
 import { AdminOnlyGuard } from './guards/admin-only.guard';
 
@@ -87,5 +88,30 @@ export class AuthController {
   async loginPharmacy(@Body() loginDto: LoginPharmacyDto, @Request() req: any) {
     const ipAddress = req.ip || req.connection.remoteAddress || '0.0.0.0';
     return this.authService.loginPharmacy(loginDto, ipAddress);
+  }
+
+  @Post('refresh/admin')
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: 'Refresh admin access token' })
+  @ApiResponse({
+    status: 200,
+    description: 'New access token generated',
+    schema: {
+      example: {
+        access_token: 'nuevo_access_admin...',
+        expires_in: 300,
+      },
+    },
+  })
+  @ApiResponse({
+    status: 400,
+    description: 'Bad request - missing or invalid refresh token',
+  })
+  @ApiResponse({
+    status: 401,
+    description: 'Unauthorized - invalid or expired refresh token',
+  })
+  async refreshAdmin(@Body() refreshAdminDto: RefreshAdminDto) {
+    return this.authService.refreshAdmin(refreshAdminDto.refresh_token);
   }
 }

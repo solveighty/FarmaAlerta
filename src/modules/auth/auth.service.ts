@@ -4,6 +4,7 @@ import { RegisterAdminUseCase } from './use-case/register-admin.use-case';
 import { LoginAdminUseCase } from './use-case/login-admin.use-case';
 import { RegisterPharmacyUseCase } from './use-case/register-pharmacy.use-case';
 import { LoginPharmacyUseCase } from './use-case/login-pharmacy.use-case';
+import { RefreshAdminUseCase } from './use-case/refresh-admin.use-case';
 import { RegisterAdminDto } from './dto/register-admin.dto';
 import { RegisterPharmacyDto } from './dto/register-pharmacy.dto';
 import { LoginPharmacyDto } from './dto/login-pharmacy.dto';
@@ -16,6 +17,7 @@ export class AuthService {
     private readonly loginAdminUseCase: LoginAdminUseCase,
     private readonly registerPharmacyUseCase: RegisterPharmacyUseCase,
     private readonly loginPharmacyUseCase: LoginPharmacyUseCase,
+    private readonly refreshAdminUseCase: RefreshAdminUseCase,
   ) {}
 
   async validateUser(email: string, password: string): Promise<any> {
@@ -53,5 +55,9 @@ export class AuthService {
     } catch (error) {
       return null;
     }
+  }
+
+  async refreshAdmin(refreshToken: string): Promise<any> {
+    return this.refreshAdminUseCase.execute(refreshToken);
   }
 }

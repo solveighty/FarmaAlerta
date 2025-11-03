@@ -8,6 +8,7 @@ import { RegisterAdminUseCase } from './use-case/register-admin.use-case';
 import { LoginAdminUseCase } from './use-case/login-admin.use-case';
 import { RegisterPharmacyUseCase } from './use-case/register-pharmacy.use-case';
 import { LoginPharmacyUseCase } from './use-case/login-pharmacy.use-case';
+import { RefreshAdminUseCase } from './use-case/refresh-admin.use-case';
 import { JwtStrategy } from './strategies/jwt.strategy';
 import { UsersModule } from '../users/users.module';
 import { AuditModule } from '../audit/audit.module';
@@ -29,7 +30,7 @@ import { envs } from '../../config';
     RedisModule,
   ],
   controllers: [AuthController],
-  providers: [AuthService, RegisterAdminUseCase, LoginAdminUseCase, RegisterPharmacyUseCase, LoginPharmacyUseCase, JwtStrategy],
+  providers: [AuthService, RegisterAdminUseCase, LoginAdminUseCase, RegisterPharmacyUseCase, LoginPharmacyUseCase, RefreshAdminUseCase, JwtStrategy],
   exports: [AuthService],
 })
 export class AuthModule {}
