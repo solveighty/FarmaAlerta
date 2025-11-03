@@ -1,10 +1,8 @@
-import { Controller, Post, Body, Get, HttpCode, HttpStatus, UseGuards, Request } from '@nestjs/common';
+import { Controller, Post, Body, HttpCode, HttpStatus, UseGuards, Request } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiResponse, ApiBearerAuth } from '@nestjs/swagger';
 import { AuthService } from './auth.service';
-import { RegisterUserDto } from './dto/register-user.dto';
 import { RegisterAdminDto } from './dto/register-admin.dto';
 import { RegisterPharmacyDto } from './dto/register-pharmacy.dto';
-import { LoginUserDto } from './dto/login-user.dto';
 import { LoginAdminDto } from './dto/login-admin.dto';
 import { LoginPharmacyDto } from './dto/login-pharmacy.dto';
 import { JwtAuthGuard } from './guards/jwt-auth.guard';
@@ -14,25 +12,6 @@ import { AdminOnlyGuard } from './guards/admin-only.guard';
 @Controller('auth')
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
-
-  @Post('register/user')
-  @HttpCode(HttpStatus.CREATED)
-  @ApiOperation({ summary: 'Register a new user' })
-  @ApiResponse({
-    status: 201,
-    description: 'User registered successfully. Please log in to access the application.',
-  })
-  @ApiResponse({
-    status: 400,
-    description: 'Bad request - validation error or password mismatch',
-  })
-  @ApiResponse({
-    status: 409,
-    description: 'User with this email already exists',
-  })
-  async registerUser(@Body() registerUserDto: RegisterUserDto) {
-    return this.authService.register(registerUserDto);
-  }
 
   @Post('register/admin')
   @HttpCode(HttpStatus.CREATED)
@@ -87,16 +66,6 @@ export class AuthController {
     @Request() req: any,
   ) {
     return this.authService.registerPharmacy(registerPharmacyDto, req.user.id);
-  }
-
-  @Post('login/user')
-  @HttpCode(HttpStatus.OK)
-  @ApiOperation({ summary: 'User login endpoint (role = user)' })
-  @ApiResponse({ status: 200, description: 'Access and refresh tokens returned' })
-  @ApiResponse({ status: 401, description: 'Invalid credentials' })
-  @ApiResponse({ status: 403, description: 'Forbidden - wrong role' })
-  async loginUser(@Body() loginDto: LoginUserDto) {
-    return this.authService.loginUser(loginDto.email, loginDto.password);
   }
 
   @Post('login/admin')
