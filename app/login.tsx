@@ -1,14 +1,18 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, TextInput, Pressable, Dimensions, ScrollView } from 'react-native';
+import { View, Text, StyleSheet, TextInput, Pressable, Dimensions, ScrollView, Alert } from 'react-native';
 import { MaterialCommunityIcons, Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import Svg, { Defs, RadialGradient, Stop, Circle } from 'react-native-svg';
+import { useUser } from '@/contexts/UserContext';
+import { useFarmacia } from '@/contexts/FarmaciaContext';
 
 const { width, height } = Dimensions.get('window');
 
 export default function LoginScreen() {
   const router = useRouter();
+  const { allClientes, setActiveClient } = useUser();
+  const { loginFarmacia } = useFarmacia();
   const [selectedTab, setSelectedTab] = useState<'cliente' | 'farmacia'>('cliente');
   const [showPassword, setShowPassword] = useState(false);
 
@@ -16,13 +20,44 @@ export default function LoginScreen() {
   const [nombreCliente, setNombreCliente] = useState('');
 
   // Estados para Farmacia
-  const [correoFarmacia, setCorreoFarmacia] = useState('');
+  const [emailFarmacia, setEmailFarmacia] = useState('');
   const [contrasenaFarmacia, setContrasenaFarmacia] = useState('');
 
-  const handleLogin = () => {
-    // Lógica de login
-    console.log('Iniciando sesión...');
-    router.push('/(tabs)');
+  const handleLoginCliente = async () => {
+    if (!nombreCliente.trim()) {
+      Alert.alert('Error', 'Por favor ingresa tu nombre completo');
+      return;
+    }
+
+    // Buscar el cliente en la lista registrada
+    const cliente = allClientes.find(
+      c => c.nombre.toLowerCase().trim() === nombreCliente.toLowerCase().trim()
+    );
+
+    if (cliente) {
+      // Activar el cliente
+      await setActiveClient(cliente.id);
+      console.log('Iniciando sesión como:', cliente.nombre);
+      router.push('/(tabs)');
+    } else {
+      Alert.alert('Error', 'Cliente no registrado. Por favor regístrate primero');
+    }
+  };
+
+  const handleLoginFarmacia = async () => {
+    if (!emailFarmacia.trim() || !contrasenaFarmacia.trim()) {
+      Alert.alert('Error', 'Por favor ingresa email y contraseña');
+      return;
+    }
+
+    const result = await loginFarmacia(emailFarmacia.trim(), contrasenaFarmacia.trim());
+
+    if (result.success) {
+      console.log('Iniciando sesión como farmacia');
+      router.push('/farmacia-dashboard' as any);
+    } else {
+      Alert.alert('Error', result.error || 'Email o contraseña incorrectos');
+    }
   };
 
   const handleRegister = () => {
@@ -32,11 +67,11 @@ export default function LoginScreen() {
   return (
     <View style={styles.container}>
       <StatusBar style="light" />
-      
+
       {/* SVG Background con círculos difuminados */}
-      <Svg 
-        height={height} 
-        width={width} 
+      <Svg
+        height={height}
+        width={width}
         style={StyleSheet.absoluteFill}
       >
         <Defs>
@@ -46,7 +81,7 @@ export default function LoginScreen() {
             <Stop offset="100%" stopColor="#1dc962" stopOpacity="0" />
           </RadialGradient>
         </Defs>
-        
+
         <Circle
           cx={width * 0.5}
           cy={height * 0.05}
@@ -55,7 +90,7 @@ export default function LoginScreen() {
         />
       </Svg>
 
-      <ScrollView 
+      <ScrollView
         contentContainerStyle={styles.scrollContent}
         showsVerticalScrollIndicator={false}
       >
@@ -64,14 +99,14 @@ export default function LoginScreen() {
           <View style={styles.iconContainer}>
             <MaterialCommunityIcons name="plus-circle" size={32} color="#1dc962" />
           </View>
-          
+
           <Text style={styles.title}>Bienvenido de Vuelta</Text>
           <Text style={styles.subtitle}>Inicia sesión en tu cuenta de FarmaAlerta</Text>
         </View>
 
         {/* Tabs */}
         <View style={styles.tabsContainer}>
-          <Pressable 
+          <Pressable
             style={[styles.tab, selectedTab === 'cliente' && styles.tabActive]}
             onPress={() => setSelectedTab('cliente')}
           >
@@ -79,8 +114,8 @@ export default function LoginScreen() {
               Cliente
             </Text>
           </Pressable>
-          
-          <Pressable 
+
+          <Pressable
             style={[styles.tab, selectedTab === 'farmacia' && styles.tabActive]}
             onPress={() => setSelectedTab('farmacia')}
           >
@@ -110,15 +145,15 @@ export default function LoginScreen() {
         {selectedTab === 'farmacia' && (
           <View style={styles.formContainer}>
             <View style={styles.inputGroup}>
-              <Text style={styles.label}>Correo Electrónico</Text>
+              <Text style={styles.label}>Email</Text>
               <TextInput
                 style={styles.input}
-                placeholder="Ingresa tu correo electrónico"
+                placeholder="Ingresa tu email"
                 placeholderTextColor="#6b7280"
                 keyboardType="email-address"
                 autoCapitalize="none"
-                value={correoFarmacia}
-                onChangeText={setCorreoFarmacia}
+                value={emailFarmacia}
+                onChangeText={setEmailFarmacia}
               />
             </View>
 
@@ -133,14 +168,14 @@ export default function LoginScreen() {
                   value={contrasenaFarmacia}
                   onChangeText={setContrasenaFarmacia}
                 />
-                <Pressable 
+                <Pressable
                   style={styles.eyeIcon}
                   onPress={() => setShowPassword(!showPassword)}
                 >
-                  <Ionicons 
-                    name={showPassword ? "eye-off-outline" : "eye-outline"} 
-                    size={20} 
-                    color="#9ca3af" 
+                  <Ionicons
+                    name={showPassword ? "eye-off-outline" : "eye-outline"}
+                    size={20}
+                    color="#9ca3af"
                   />
                 </Pressable>
               </View>
@@ -149,12 +184,12 @@ export default function LoginScreen() {
         )}
 
         {/* Botón Iniciar Sesión */}
-        <Pressable 
+        <Pressable
           style={({ pressed }) => [
             styles.loginButton,
             pressed && styles.buttonPressed
           ]}
-          onPress={handleLogin}
+          onPress={selectedTab === 'cliente' ? handleLoginCliente : handleLoginFarmacia}
         >
           <Text style={styles.loginButtonText}>Iniciar Sesión</Text>
         </Pressable>
@@ -208,19 +243,24 @@ const styles = StyleSheet.create({
   },
   tabsContainer: {
     flexDirection: 'row',
-    backgroundColor: 'rgba(29, 201, 98, 0.1)',
-    borderRadius: 8,
+    backgroundColor: 'rgba(255, 255, 255, 0.08)',
+    borderRadius: 16,
     padding: 4,
     marginBottom: 24,
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.1)',
   },
   tab: {
     flex: 1,
     paddingVertical: 12,
-    borderRadius: 6,
+    borderRadius: 12,
     alignItems: 'center',
   },
   tabActive: {
-    backgroundColor: '#4a5568',
+    backgroundColor: 'rgba(29, 201, 98, 0.08)',
+    borderRadius: 12,
+    borderWidth: 1.5,
+    borderColor: 'rgba(29, 201, 98, 0.25)',
   },
   tabText: {
     fontSize: 14,
@@ -244,22 +284,22 @@ const styles = StyleSheet.create({
     marginBottom: 8,
   },
   input: {
-    backgroundColor: 'rgba(29, 201, 98, 0.08)',
-    borderRadius: 8,
+    backgroundColor: 'rgba(255, 255, 255, 0.08)',
+    borderRadius: 16,
     paddingHorizontal: 16,
     paddingVertical: 14,
     fontSize: 15,
     color: '#f9fafb',
     borderWidth: 1,
-    borderColor: 'rgba(29, 201, 98, 0.2)',
+    borderColor: 'rgba(255, 255, 255, 0.1)',
   },
   passwordContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: 'rgba(29, 201, 98, 0.08)',
-    borderRadius: 8,
+    backgroundColor: 'rgba(255, 255, 255, 0.08)',
+    borderRadius: 16,
     borderWidth: 1,
-    borderColor: 'rgba(29, 201, 98, 0.2)',
+    borderColor: 'rgba(255, 255, 255, 0.1)',
   },
   passwordInput: {
     flex: 1,

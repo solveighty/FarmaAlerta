@@ -1,22 +1,37 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, TextInput, Pressable, Dimensions, ScrollView } from 'react-native';
+import { View, Text, StyleSheet, TextInput, Pressable, Dimensions, ScrollView, Alert } from 'react-native';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import Svg, { Defs, RadialGradient, Stop, Circle } from 'react-native-svg';
+import { useUser } from '@/contexts/UserContext';
 
 const { width, height } = Dimensions.get('window');
 
 export default function RegisterScreen() {
   const router = useRouter();
+  const { registerCliente } = useUser();
 
   // Estados para Cliente
   const [nombreCliente, setNombreCliente] = useState('');
+  const [loading, setLoading] = useState(false);
 
-  const handleRegister = () => {
-    // Lógica de registro
-    console.log('Registrando...');
-    router.push('/(tabs)');
+  const handleRegister = async () => {
+    if (!nombreCliente.trim()) {
+      Alert.alert('Error', 'Por favor ingresa tu nombre completo');
+      return;
+    }
+
+    setLoading(true);
+    const result = await registerCliente(nombreCliente.trim());
+    setLoading(false);
+
+    if (result.success) {
+      console.log('Registrando:', nombreCliente);
+      router.push('/(tabs)');
+    } else {
+      Alert.alert('Error', result.error || 'Error al registrar');
+    }
   };
 
   const handleLogin = () => {
@@ -148,14 +163,14 @@ const styles = StyleSheet.create({
     marginBottom: 8,
   },
   input: {
-    backgroundColor: 'rgba(29, 201, 98, 0.08)',
-    borderRadius: 8,
+    backgroundColor: 'rgba(255, 255, 255, 0.08)',
+    borderRadius: 16,
     paddingHorizontal: 16,
     paddingVertical: 14,
     fontSize: 15,
     color: '#f9fafb',
     borderWidth: 1,
-    borderColor: 'rgba(29, 201, 98, 0.2)',
+    borderColor: 'rgba(255, 255, 255, 0.1)',
   },
   createButton: {
     backgroundColor: '#1dc962',
