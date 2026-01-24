@@ -1,11 +1,13 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, TextInput, Pressable, Dimensions, ScrollView, Alert } from 'react-native';
+import { View, Text, StyleSheet, TextInput, Pressable, Dimensions, ScrollView } from 'react-native';
 import { MaterialCommunityIcons, Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import Svg, { Defs, RadialGradient, Stop, Circle } from 'react-native-svg';
 import { useUser } from '@/contexts/UserContext';
 import { useFarmacia } from '@/contexts/FarmaciaContext';
+import CustomAlert from '@/components/CustomAlert';
+import { useCustomAlert } from '@/hooks/useCustomAlert';
 
 const { width, height } = Dimensions.get('window');
 
@@ -13,6 +15,7 @@ export default function LoginScreen() {
   const router = useRouter();
   const { allClientes, setActiveClient } = useUser();
   const { loginFarmacia } = useFarmacia();
+  const alert = useCustomAlert();
   const [selectedTab, setSelectedTab] = useState<'cliente' | 'farmacia'>('cliente');
   const [showPassword, setShowPassword] = useState(false);
 
@@ -25,7 +28,12 @@ export default function LoginScreen() {
 
   const handleLoginCliente = async () => {
     if (!nombreCliente.trim()) {
-      Alert.alert('Error', 'Por favor ingresa tu nombre completo');
+      alert.show({
+        title: 'Error',
+        message: 'Por favor ingresa tu nombre completo',
+        type: 'error',
+        buttons: [{ text: 'OK' }]
+      });
       return;
     }
 
@@ -40,13 +48,23 @@ export default function LoginScreen() {
       console.log('Iniciando sesión como:', cliente.nombre);
       router.push('/(tabs)');
     } else {
-      Alert.alert('Error', 'Cliente no registrado. Por favor regístrate primero');
+      alert.show({
+        title: 'Error',
+        message: 'Cliente no registrado. Por favor regístrate primero',
+        type: 'error',
+        buttons: [{ text: 'OK' }]
+      });
     }
   };
 
   const handleLoginFarmacia = async () => {
     if (!emailFarmacia.trim() || !contrasenaFarmacia.trim()) {
-      Alert.alert('Error', 'Por favor ingresa email y contraseña');
+      alert.show({
+        title: 'Error',
+        message: 'Por favor ingresa email y contraseña',
+        type: 'error',
+        buttons: [{ text: 'OK' }]
+      });
       return;
     }
 
@@ -56,7 +74,12 @@ export default function LoginScreen() {
       console.log('Iniciando sesión como farmacia');
       router.push('/farmacia-dashboard' as any);
     } else {
-      Alert.alert('Error', result.error || 'Email o contraseña incorrectos');
+      alert.show({
+        title: 'Error',
+        message: result.error || 'Email o contraseña incorrectos',
+        type: 'error',
+        buttons: [{ text: 'OK' }]
+      });
     }
   };
 
@@ -202,6 +225,15 @@ export default function LoginScreen() {
           </Pressable>
         </View>
       </ScrollView>
+
+      <CustomAlert
+        visible={alert.visible}
+        title={alert.title}
+        message={alert.message}
+        type={alert.type}
+        buttons={alert.buttons}
+        onDismiss={alert.hide}
+      />
     </View>
   );
 }

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import {
   View,
   Text,
@@ -27,33 +27,43 @@ export default function FarmaciaDashboardScreen() {
   const [stockBajoCount, setStockBajoCount] = useState(0);
   const [agotadoCount, setAgotadoCount] = useState(0);
   const [productosStockBajo, setProductosStockBajo] = useState<any[]>([]);
+  const [productosAgotados, setProductosAgotados] = useState<any[]>([]);
 
-  // Recargar productos cuando la pantalla se enfoca
+  // Función para cargar datos (sin dependencias externas problemáticas)
+  const loadDashboardData = useCallback(async () => {
+    if (activeFarmacia) {
+      await reloadProductos();
+
+      const productos = getProductosByFarmacia(activeFarmacia.email);
+      setProductosCount(productos.length);
+
+      // Contar stock bajo (1-20) y agotado (0)
+      let bajo = 0;
+      let agotado = 0;
+      const stockBajos: any[] = [];
+      const agotados: any[] = [];
+
+      productos.forEach(p => {
+        if (p.cantidad === 0) {
+          agotado++;
+          agotados.push(p);
+        } else if (p.cantidad <= 20) {
+          bajo++;
+          stockBajos.push(p);
+        }
+      });
+      setStockBajoCount(bajo);
+      setAgotadoCount(agotado);
+      setProductosStockBajo(stockBajos);
+      setProductosAgotados(agotados);
+    }
+  }, [activeFarmacia, getProductosByFarmacia, reloadProductos]);
+
+  // Cargar datos cuando se enfoca la pantalla o cuando cambia la farmacia
   useFocusEffect(
-    React.useCallback(() => {
-      reloadProductos();
-      if (activeFarmacia) {
-        const productos = getProductosByFarmacia(activeFarmacia.email);
-        setProductosCount(productos.length);
-
-        // Contar stock bajo (1-20) y agotado (0)
-        let bajo = 0;
-        let agotado = 0;
-        const stockBajos: any[] = [];
-        
-        productos.forEach(p => {
-          if (p.cantidad === 0) {
-            agotado++;
-          } else if (p.cantidad <= 20) {
-            bajo++;
-            stockBajos.push(p);
-          }
-        });
-        setStockBajoCount(bajo);
-        setAgotadoCount(agotado);
-        setProductosStockBajo(stockBajos);
-      }
-    }, [activeFarmacia])
+    useCallback(() => {
+      loadDashboardData();
+    }, [loadDashboardData])
   );
 
   useEffect(() => {
@@ -160,11 +170,12 @@ export default function FarmaciaDashboardScreen() {
                 styles.quickAccessCard,
                 pressed && styles.pressed
               ]}
+              onPress={() => router.push('/farmacia-stock' as any)}
             >
               <View style={styles.iconCircle}>
-                <MaterialCommunityIcons name="shopping-outline" size={28} color="#1dc962" />
+                <MaterialCommunityIcons name="package-variant" size={28} color="#1dc962" />
               </View>
-              <Text style={styles.quickAccessText}>Gestionar Pedidos</Text>
+              <Text style={styles.quickAccessText}>Gestionar Stock</Text>
             </Pressable>
           </View>
         </View>
@@ -172,18 +183,34 @@ export default function FarmaciaDashboardScreen() {
         {/* Notificaciones */}
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>Notificaciones</Text>
-          {productosStockBajo.length > 0 ? (
-            productosStockBajo.map((producto) => (
-              <View key={producto.id} style={styles.notificationCard}>
-                <MaterialCommunityIcons name="alert" size={24} color="#fbbf24" />
-                <View style={styles.notificationContent}>
-                  <Text style={styles.notificationTitle}>Alerta de stock bajo</Text>
-                  <Text style={styles.notificationText}>
-                    {producto.nombreProducto} tiene solo {producto.cantidad} unidades restantes.
-                  </Text>
+          {productosAgotados.length > 0 || productosStockBajo.length > 0 ? (
+            <View>
+              {/* Productos Agotados */}
+              {productosAgotados.map((producto) => (
+                <View key={`agotado-${producto.id}`} style={[styles.notificationCard, styles.notificationCardAgotado]}>
+                  <MaterialCommunityIcons name="alert-circle" size={24} color="#ef4444" />
+                  <View style={styles.notificationContent}>
+                    <Text style={styles.notificationTitle}>Sin stock disponible</Text>
+                    <Text style={styles.notificationText}>
+                      {producto.nombreProducto} está agotado.
+                    </Text>
+                  </View>
                 </View>
-              </View>
-            ))
+              ))}
+
+              {/* Productos con Stock Bajo */}
+              {productosStockBajo.map((producto) => (
+                <View key={`bajo-${producto.id}`} style={[styles.notificationCard, styles.notificationCardBajo]}>
+                  <MaterialCommunityIcons name="alert" size={24} color="#fbbf24" />
+                  <View style={styles.notificationContent}>
+                    <Text style={styles.notificationTitle}>Alerta de stock bajo</Text>
+                    <Text style={styles.notificationText}>
+                      {producto.nombreProducto} tiene solo {producto.cantidad} unidades restantes.
+                    </Text>
+                  </View>
+                </View>
+              ))}
+            </View>
           ) : (
             <View style={styles.emptyNotifications}>
               <MaterialCommunityIcons name="check-circle" size={32} color="#1dc962" />
@@ -335,6 +362,14 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: 'rgba(255, 255, 255, 0.1)',
     alignItems: 'flex-start',
+  },
+  notificationCardAgotado: {
+    backgroundColor: 'rgba(239, 68, 68, 0.1)',
+    borderColor: 'rgba(239, 68, 68, 0.3)',
+  },
+  notificationCardBajo: {
+    backgroundColor: 'rgba(251, 191, 36, 0.1)',
+    borderColor: 'rgba(251, 191, 36, 0.3)',
   },
   notificationContent: {
     flex: 1,

@@ -8,14 +8,16 @@ import {
     StatusBar,
     Pressable,
     Switch,
-    Alert,
 } from 'react-native';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useAlertas } from '@/contexts/AlertasContext';
 import { useFocusEffect } from '@react-navigation/native';
+import CustomAlert from '@/components/CustomAlert';
+import { useCustomAlert } from '@/hooks/useCustomAlert';
 
 export default function AlertsScreen() {
     const { alertas, toggleAlerta, cancelarAlerta, verificarDisponibilidad } = useAlertas();
+    const alert = useCustomAlert();
     const [filtro, setFiltro] = useState<'activas' | 'todas'>('activas');
 
     // Verificar disponibilidad cuando se abre la pantalla
@@ -30,18 +32,19 @@ export default function AlertsScreen() {
         : alertas;
 
     const handleEliminar = (alertaId: string, nombreMedicamento: string) => {
-        Alert.alert(
-            'Eliminar alerta',
-            `¿Deseas eliminar la alerta para ${nombreMedicamento}?`,
-            [
-                { text: 'Cancelar', onPress: () => { }, style: 'cancel' },
+        alert.show({
+            title: 'Eliminar alerta',
+            message: `¿Deseas eliminar la alerta para ${nombreMedicamento}?`,
+            type: 'warning',
+            buttons: [
+                { text: 'Cancelar', style: 'cancel' },
                 {
                     text: 'Eliminar',
                     onPress: () => cancelarAlerta(alertaId),
                     style: 'destructive',
                 },
             ]
-        );
+        });
     };
 
     const obtenerTiempoTranscurrido = (fecha: Date) => {
@@ -157,6 +160,24 @@ export default function AlertsScreen() {
                     </View>
                 )}
             </ScrollView>
+
+            <CustomAlert
+                visible={alert.visible}
+                title={alert.title}
+                message={alert.message}
+                type={alert.type}
+                buttons={alert.buttons}
+                onDismiss={alert.hide}
+            />
+
+            <CustomAlert
+                visible={alert.visible}
+                title={alert.title}
+                message={alert.message}
+                type={alert.type}
+                buttons={alert.buttons}
+                onDismiss={alert.hide}
+            />
         </SafeAreaView>
     );
 }

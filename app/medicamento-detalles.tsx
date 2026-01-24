@@ -84,12 +84,12 @@ export default function MedicamentoDetallesScreen() {
             </View>
 
             <ScrollView style={styles.content} showsVerticalScrollIndicator={false}>
-                {/* Foto grande */}
+                {/* Foto grande con efecto de escala */}
                 <View style={styles.imageContainer}>
                     {producto.urlFoto ? (
-                        <Image
+                        <Animated.Image
                             source={{ uri: producto.urlFoto }}
-                            style={styles.productImage}
+                            style={[styles.productImage, { transform: [{ scale: scaleAnim }] }]}
                         />
                     ) : (
                         <View style={[styles.productImage, styles.imagePlaceholder]}>

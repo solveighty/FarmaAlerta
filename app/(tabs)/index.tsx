@@ -18,6 +18,7 @@ import { useFarmacia } from '@/contexts/FarmaciaContext';
 import { useAlertas } from '@/contexts/AlertasContext';
 import { Farmacia } from '@/data/mockData';
 import AlertToast from '@/components/alert-toast';
+import SwipeableAlert from '@/components/SwipeableAlert';
 
 const { width } = Dimensions.get('window');
 

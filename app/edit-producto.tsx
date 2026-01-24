@@ -7,7 +7,6 @@ import {
     TextInput,
     Pressable,
     Dimensions,
-    Alert,
     Image,
     ActivityIndicator,
     Modal,
@@ -20,6 +19,8 @@ import { Stack } from 'expo-router';
 import { useFarmacia } from '@/contexts/FarmaciaContext';
 import { useProducto } from '@/contexts/ProductoContext';
 import { useImageUpload } from '@/hooks/useImageUpload';
+import CustomAlert from '@/components/CustomAlert';
+import { useCustomAlert } from '@/hooks/useCustomAlert';
 
 const { width, height } = Dimensions.get('window');
 
@@ -31,6 +32,7 @@ export default function EditProductoScreen() {
     const { activeFarmacia } = useFarmacia();
     const { editarProducto, eliminarProducto } = useProducto();
     const { selectAndUpload, loading: imageLoading } = useImageUpload();
+    const alert = useCustomAlert();
 
     const [nombreProducto, setNombreProducto] = useState('');
     const [descripción, setDescripción] = useState('');
@@ -69,20 +71,40 @@ export default function EditProductoScreen() {
         const url = await selectAndUpload();
         if (url) {
             setUrlFoto(url);
-            Alert.alert('Éxito', 'Imagen subida correctamente');
+            alert.show({
+                title: 'Éxito',
+                message: 'Imagen subida correctamente',
+                type: 'success',
+                buttons: [{ text: 'OK' }]
+            });
         } else {
-            Alert.alert('Error', 'No se pudo subir la imagen');
+            alert.show({
+                title: 'Error',
+                message: 'No se pudo subir la imagen',
+                type: 'error',
+                buttons: [{ text: 'OK' }]
+            });
         }
     };
 
     const handleEditProducto = async () => {
         if (!nombreProducto.trim() || !descripción.trim() || !precio || !cantidad || !fechaCaducidad) {
-            Alert.alert('Error', 'Por favor completa todos los campos');
+            alert.show({
+                title: 'Error',
+                message: 'Por favor completa todos los campos',
+                type: 'error',
+                buttons: [{ text: 'OK' }]
+            });
             return;
         }
 
         if (isNaN(parseFloat(precio)) || isNaN(parseInt(cantidad))) {
-            Alert.alert('Error', 'Precio y cantidad deben ser números válidos');
+            alert.show({
+                title: 'Error',
+                message: 'Precio y cantidad deben ser números válidos',
+                type: 'error',
+                buttons: [{ text: 'OK' }]
+            });
             return;
         }
 
@@ -103,14 +125,19 @@ export default function EditProductoScreen() {
         setLoading(false);
 
         if (result.success) {
-            Alert.alert('Éxito', 'Producto actualizado correctamente', [
-                {
-                    text: 'OK',
-                    onPress: () => router.back(),
-                },
-            ]);
+            alert.show({
+                title: 'Éxito',
+                message: 'Producto actualizado correctamente',
+                type: 'success',
+                buttons: [{ text: 'OK', onPress: () => router.back() }]
+            });
         } else {
-            Alert.alert('Error', result.error || 'Error al actualizar producto');
+            alert.show({
+                title: 'Error',
+                message: result.error || 'Error al actualizar producto',
+                type: 'error',
+                buttons: [{ text: 'OK' }]
+            });
         }
     };
 
@@ -127,14 +154,19 @@ export default function EditProductoScreen() {
         setLoading(false);
 
         if (result.success) {
-            Alert.alert('Éxito', 'Producto eliminado correctamente', [
-                {
-                    text: 'OK',
-                    onPress: () => router.back(),
-                },
-            ]);
+            alert.show({
+                title: 'Éxito',
+                message: 'Producto eliminado correctamente',
+                type: 'success',
+                buttons: [{ text: 'OK', onPress: () => router.back() }]
+            });
         } else {
-            Alert.alert('Error', result.error || 'Error al eliminar producto');
+            alert.show({
+                title: 'Error',
+                message: result.error || 'Error al eliminar producto',
+                type: 'error',
+                buttons: [{ text: 'OK' }]
+            });
         }
     };
 
@@ -344,6 +376,15 @@ export default function EditProductoScreen() {
                     </View>
                 </View>
             </Modal>
+
+            <CustomAlert
+                visible={alert.visible}
+                title={alert.title}
+                message={alert.message}
+                type={alert.type}
+                buttons={alert.buttons}
+                onDismiss={alert.hide}
+            />
         </View>
     );
 }

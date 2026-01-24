@@ -15,6 +15,7 @@ import { useRouter } from 'expo-router';
 import Svg, { Circle, Defs, RadialGradient, Stop } from 'react-native-svg';
 import { Farmacia } from '@/data/mockData';
 import { useFarmacia } from '@/contexts/FarmaciaContext';
+import StaggerView from '@/components/StaggerView';
 
 const { width } = Dimensions.get('window');
 
@@ -105,11 +106,11 @@ export default function ExploreScreen() {
         </View>
 
         {/* Lista de farmacias */}
-        <View style={styles.farmaciasList}>
+        <StaggerView staggerDelay={100}>
           {filteredFarmacias.map((farmacia) => (
             <FarmaciaCard key={farmacia.id} farmacia={farmacia} />
           ))}
-        </View>
+        </StaggerView>
 
         {filteredFarmacias.length === 0 && (
           <View style={styles.emptyState}>

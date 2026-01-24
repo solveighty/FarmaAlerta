@@ -1,16 +1,19 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, TextInput, Pressable, Dimensions, ScrollView, Alert } from 'react-native';
+import { View, Text, StyleSheet, TextInput, Pressable, Dimensions, ScrollView } from 'react-native';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import Svg, { Defs, RadialGradient, Stop, Circle } from 'react-native-svg';
 import { useUser } from '@/contexts/UserContext';
+import CustomAlert from '@/components/CustomAlert';
+import { useCustomAlert } from '@/hooks/useCustomAlert';
 
 const { width, height } = Dimensions.get('window');
 
 export default function RegisterScreen() {
   const router = useRouter();
   const { registerCliente } = useUser();
+  const alert = useCustomAlert();
 
   // Estados para Cliente
   const [nombreCliente, setNombreCliente] = useState('');
@@ -18,7 +21,12 @@ export default function RegisterScreen() {
 
   const handleRegister = async () => {
     if (!nombreCliente.trim()) {
-      Alert.alert('Error', 'Por favor ingresa tu nombre completo');
+      alert.show({
+        title: 'Error',
+        message: 'Por favor ingresa tu nombre completo',
+        type: 'error',
+        buttons: [{ text: 'OK' }]
+      });
       return;
     }
 
@@ -30,7 +38,12 @@ export default function RegisterScreen() {
       console.log('Registrando:', nombreCliente);
       router.push('/(tabs)');
     } else {
-      Alert.alert('Error', result.error || 'Error al registrar');
+      alert.show({
+        title: 'Error',
+        message: result.error || 'Error al registrar',
+        type: 'error',
+        buttons: [{ text: 'OK' }]
+      });
     }
   };
 
@@ -41,11 +54,11 @@ export default function RegisterScreen() {
   return (
     <View style={styles.container}>
       <StatusBar style="light" />
-      
+
       {/* SVG Background con círculos difuminados */}
-      <Svg 
-        height={height} 
-        width={width} 
+      <Svg
+        height={height}
+        width={width}
         style={StyleSheet.absoluteFill}
       >
         <Defs>
@@ -55,7 +68,7 @@ export default function RegisterScreen() {
             <Stop offset="100%" stopColor="#1dc962" stopOpacity="0" />
           </RadialGradient>
         </Defs>
-        
+
         <Circle
           cx={width * 0.5}
           cy={height * 0.05}
@@ -64,7 +77,7 @@ export default function RegisterScreen() {
         />
       </Svg>
 
-      <ScrollView 
+      <ScrollView
         contentContainerStyle={styles.scrollContent}
         showsVerticalScrollIndicator={false}
       >
@@ -73,7 +86,7 @@ export default function RegisterScreen() {
           <View style={styles.iconContainer}>
             <MaterialCommunityIcons name="plus-circle" size={32} color="#1dc962" />
           </View>
-          
+
           <Text style={styles.title}>Crea tu Cuenta</Text>
           <Text style={styles.subtitle}>Regístrate para empezar a usar FarmaAlerta</Text>
         </View>
@@ -93,7 +106,7 @@ export default function RegisterScreen() {
         </View>
 
         {/* Botón Crear Cuenta */}
-        <Pressable 
+        <Pressable
           style={({ pressed }) => [
             styles.createButton,
             pressed && styles.buttonPressed
@@ -111,6 +124,15 @@ export default function RegisterScreen() {
           </Pressable>
         </View>
       </ScrollView>
+
+      <CustomAlert
+        visible={alert.visible}
+        title={alert.title}
+        message={alert.message}
+        type={alert.type}
+        buttons={alert.buttons}
+        onDismiss={alert.hide}
+      />
     </View>
   );
 }

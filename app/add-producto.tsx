@@ -7,7 +7,6 @@ import {
   TextInput,
   Pressable,
   Dimensions,
-  Alert,
   Image,
   ActivityIndicator,
 } from 'react-native';
@@ -19,6 +18,8 @@ import { Stack } from 'expo-router';
 import { useFarmacia } from '@/contexts/FarmaciaContext';
 import { useProducto } from '@/contexts/ProductoContext';
 import { useImageUpload } from '@/hooks/useImageUpload';
+import CustomAlert from '@/components/CustomAlert';
+import { useCustomAlert } from '@/hooks/useCustomAlert';
 
 const { width, height } = Dimensions.get('window');
 
@@ -29,6 +30,7 @@ export default function AddProductoScreen() {
   const { activeFarmacia } = useFarmacia();
   const { agregarProducto } = useProducto();
   const { selectAndUpload, loading: imageLoading } = useImageUpload();
+  const alert = useCustomAlert();
 
   const [nombreProducto, setNombreProducto] = useState('');
   const [descripción, setDescripción] = useState('');
@@ -43,20 +45,36 @@ export default function AddProductoScreen() {
     const url = await selectAndUpload();
     if (url) {
       setUrlFoto(url);
-      Alert.alert('Éxito', 'Imagen subida correctamente');
+      alert.show({
+        title: 'Éxito',
+        message: 'Imagen subida correctamente',
+        type: 'success',
+      });
     } else {
-      Alert.alert('Error', 'No se pudo subir la imagen');
+      alert.show({
+        title: 'Error',
+        message: 'No se pudo subir la imagen',
+        type: 'error',
+      });
     }
   };
 
   const handleAddProducto = async () => {
     if (!nombreProducto.trim() || !descripción.trim() || !precio || !cantidad || !fechaCaducidad) {
-      Alert.alert('Error', 'Por favor completa todos los campos');
+      alert.show({
+        title: 'Error',
+        message: 'Por favor completa todos los campos',
+        type: 'error',
+      });
       return;
     }
 
     if (isNaN(parseFloat(precio)) || isNaN(parseInt(cantidad))) {
-      Alert.alert('Error', 'Precio y cantidad deben ser números válidos');
+      alert.show({
+        title: 'Error',
+        message: 'Precio y cantidad deben ser números válidos',
+        type: 'error',
+      });
       return;
     }
 
@@ -76,14 +94,23 @@ export default function AddProductoScreen() {
     setLoading(false);
 
     if (result.success) {
-      Alert.alert('Éxito', 'Producto agregado correctamente', [
-        {
-          text: 'OK',
-          onPress: () => router.back(),
-        },
-      ]);
+      alert.show({
+        title: 'Éxito',
+        message: 'Producto agregado correctamente',
+        type: 'success',
+        buttons: [
+          {
+            text: 'OK',
+            onPress: () => router.back(),
+          },
+        ],
+      });
     } else {
-      Alert.alert('Error', result.error || 'Error al agregar producto');
+      alert.show({
+        title: 'Error',
+        message: result.error || 'Error al agregar producto',
+        type: 'error',
+      });
     }
   };
 
@@ -268,6 +295,16 @@ export default function AddProductoScreen() {
           </Text>
         </Pressable>
       </View>
+
+      {/* Custom Alert */}
+      <CustomAlert
+        visible={alert.visible}
+        title={alert.title}
+        message={alert.message}
+        type={alert.type}
+        buttons={alert.buttons}
+        onDismiss={alert.hide}
+      />
     </View>
   );
 }

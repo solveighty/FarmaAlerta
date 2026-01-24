@@ -113,92 +113,94 @@ export default function FarmaciaStockScreen() {
                 {/* Lista de productos */}
                 <View style={styles.productsList}>
                     {filteredProducts.length > 0 ? (
-                        filteredProducts.map((product) => (
-                            <View key={product.id} style={styles.productCard}>
-                                {/* Foto del producto - lado izquierdo */}
-                                <View style={styles.productImageWrapper}>
-                                    {product.urlFoto ? (
-                                        <Image
-                                            source={{ uri: product.urlFoto }}
-                                            style={styles.productImage}
-                                        />
-                                    ) : (
-                                        <View style={[styles.productImage, styles.productImagePlaceholder]}>
-                                            <MaterialCommunityIcons name="package-variant" size={35} color="#6b7280" />
+                        filteredProducts.map((product, index) => (
+                            <View key={product.id}>
+                                <View style={styles.productCard}>
+                                    {/* Foto del producto - lado izquierdo */}
+                                    <View style={styles.productImageWrapper}>
+                                        {product.urlFoto ? (
+                                            <Image
+                                                source={{ uri: product.urlFoto }}
+                                                style={styles.productImage}
+                                            />
+                                        ) : (
+                                            <View style={[styles.productImage, styles.productImagePlaceholder]}>
+                                                <MaterialCommunityIcons name="package-variant" size={35} color="#6b7280" />
+                                            </View>
+                                        )}
+                                    </View>
+
+                                    {/* Info del producto - centro */}
+                                    <View style={styles.productInfoContainer}>
+                                        <Text style={styles.productName}>{product.nombreProducto}</Text>
+                                        <Text style={styles.productDescription}>{product.descripción}</Text>
+
+                                        <View style={styles.productStats}>
+                                            <Text style={styles.productStock}>
+                                                Stock: <Text style={[styles.productStockValue, { color: getStockColor(product.cantidad) }]}>{product.cantidad}</Text>
+                                            </Text>
+                                        </View>
+                                    </View>
+
+                                    {/* Precio y botón - lado derecho */}
+                                    <View
+                                        style={styles.productRightSection}
+                                    >
+                                        <Pressable
+                                            style={styles.productMenu}
+                                            onPress={() => setOpenMenuId(openMenuId === product.id ? null : (product.id || null))}
+                                        >
+                                            <MaterialCommunityIcons name="dots-vertical" size={18} color="#6b7280" />
+                                        </Pressable>
+
+                                        <Text style={styles.productPrice}>${product.precio.toFixed(2)}</Text>
+                                        <Pressable
+                                            style={styles.detailsButton}
+                                            onPress={() => {
+                                                console.log('🔍 Toque en Ver más:', product);
+                                                setOpenMenuId(null);
+                                                router.push({
+                                                    pathname: '/producto-detalles' as any,
+                                                    params: {
+                                                        producto: JSON.stringify(product),
+                                                    },
+                                                } as any);
+                                            }}
+                                        >
+                                            <Text style={styles.detailsButtonText}>Ver más</Text>
+                                        </Pressable>
+                                    </View>
+
+                                    {/* Menú desplegable - FUERA para no bloquear eventos */}
+                                    {product.id && openMenuId === product.id && (
+                                        <View style={styles.contextMenu} pointerEvents="auto">
+                                            <Pressable
+                                                style={styles.menuItem}
+                                                onPress={() => handleEdit(product)}
+                                            >
+                                                <MaterialCommunityIcons name="pencil" size={18} color="#1dc962" />
+                                                <Text style={styles.menuItemText}>Editar</Text>
+                                            </Pressable>
+                                            <Pressable
+                                                style={[styles.menuItem, styles.menuItemDelete]}
+                                                onPress={() => {
+                                                    setOpenMenuId(null);
+                                                    router.push({
+                                                        pathname: '/edit-producto',
+                                                        params: {
+                                                            id: product.id,
+                                                            producto: JSON.stringify(product),
+                                                            delete: 'true',
+                                                        },
+                                                    });
+                                                }}
+                                            >
+                                                <MaterialCommunityIcons name="trash-can" size={18} color="#ef4444" />
+                                                <Text style={[styles.menuItemText, { color: '#ef4444' }]}>Eliminar</Text>
+                                            </Pressable>
                                         </View>
                                     )}
                                 </View>
-
-                                {/* Info del producto - centro */}
-                                <View style={styles.productInfoContainer}>
-                                    <Text style={styles.productName}>{product.nombreProducto}</Text>
-                                    <Text style={styles.productDescription}>{product.descripción}</Text>
-
-                                    <View style={styles.productStats}>
-                                        <Text style={styles.productStock}>
-                                            Stock: <Text style={[styles.productStockValue, { color: getStockColor(product.cantidad) }]}>{product.cantidad}</Text>
-                                        </Text>
-                                    </View>
-                                </View>
-
-                                {/* Precio y botón - lado derecho */}
-                                <View
-                                    style={styles.productRightSection}
-                                >
-                                    <Pressable
-                                        style={styles.productMenu}
-                                        onPress={() => setOpenMenuId(openMenuId === product.id ? null : (product.id || null))}
-                                    >
-                                        <MaterialCommunityIcons name="dots-vertical" size={18} color="#6b7280" />
-                                    </Pressable>
-
-                                    <Text style={styles.productPrice}>${product.precio.toFixed(2)}</Text>
-                                    <Pressable
-                                        style={styles.detailsButton}
-                                        onPress={() => {
-                                            console.log('🔍 Toque en Ver más:', product);
-                                            setOpenMenuId(null);
-                                            router.push({
-                                                pathname: '/producto-detalles' as any,
-                                                params: {
-                                                    producto: JSON.stringify(product),
-                                                },
-                                            } as any);
-                                        }}
-                                    >
-                                        <Text style={styles.detailsButtonText}>Ver más</Text>
-                                    </Pressable>
-                                </View>
-
-                                {/* Menú desplegable - FUERA para no bloquear eventos */}
-                                {product.id && openMenuId === product.id && (
-                                    <View style={styles.contextMenu} pointerEvents="auto">
-                                        <Pressable
-                                            style={styles.menuItem}
-                                            onPress={() => handleEdit(product)}
-                                        >
-                                            <MaterialCommunityIcons name="pencil" size={18} color="#1dc962" />
-                                            <Text style={styles.menuItemText}>Editar</Text>
-                                        </Pressable>
-                                        <Pressable
-                                            style={[styles.menuItem, styles.menuItemDelete]}
-                                            onPress={() => {
-                                                setOpenMenuId(null);
-                                                router.push({
-                                                    pathname: '/edit-producto',
-                                                    params: {
-                                                        id: product.id,
-                                                        producto: JSON.stringify(product),
-                                                        delete: 'true',
-                                                    },
-                                                });
-                                            }}
-                                        >
-                                            <MaterialCommunityIcons name="trash-can" size={18} color="#ef4444" />
-                                            <Text style={[styles.menuItemText, { color: '#ef4444' }]}>Eliminar</Text>
-                                        </Pressable>
-                                    </View>
-                                )}
                             </View>
                         ))
                     ) : (
